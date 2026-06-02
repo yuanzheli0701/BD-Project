@@ -7,7 +7,7 @@ load_env()
 ES_HOST = os.environ.get("ES_HOST", "http://localhost:9200")
 ES_INDEX = os.environ.get("ES_INDEX", "city_depression_index")
 
-all_dates = ["2026-05-14","2026-05-15","2026-05-16","2026-05-17","2026-05-18","2026-05-19","2026-05-26","2026-06-02"]
+all_dates = [f'2026-05-{d:02d}' for d in range(1,32)] + ['2026-06-02']
 dfs = []
 for d in all_dates:
     p = get_combined_path(d) / "combined.parquet"
