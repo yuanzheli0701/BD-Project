@@ -1,4 +1,4 @@
-﻿import pandas as pd, json, requests, os, sys
+import pandas as pd, json, requests, os, sys
 from pathlib import Path
 sys.path.insert(0, r"C:\Users\13968\Documents\New project")
 from jobs.common import load_env, get_combined_path
@@ -7,7 +7,7 @@ load_env()
 ES_HOST = os.environ.get("ES_HOST", "http://localhost:9200")
 ES_INDEX = os.environ.get("ES_INDEX", "city_depression_index")
 
-all_dates = ["2026-05-14","2026-05-15","2026-05-16","2026-05-17","2026-05-18","2026-05-19","2026-05-26"]
+all_dates = ["2026-05-14","2026-05-15","2026-05-16","2026-05-17","2026-05-18","2026-05-19","2026-05-26","2026-06-02"]
 dfs = []
 for d in all_dates:
     p = get_combined_path(d) / "combined.parquet"
