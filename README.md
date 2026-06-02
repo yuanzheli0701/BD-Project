@@ -1,72 +1,109 @@
-﻿# 🌧️ City Mood × Weather Correlation Analysis
+﻿# City Mood x Weather - Correlation Analysis
 
-> **Do people actually listen to sadder music when it rains?**
->
-> We pull Spotify''s daily Top 50 audio features and local weather data, then
-> compute a **City Depression Index (CDI)** mapped across cities on Kibana.
+> **Do people listen to sadder music when it rains?**
+> 
+> Real-time music charts (Last.fm) x weather data (OpenWeatherMap) → City Depression Index → Kibana Dashboard
+
+---
+
+## Quick Start
+
+```bash
+# 1. Clone
+git clone https://github.com/yuanzheli0701/BD-Project.git
+cd BD-Project
+
+# 2. Configure API keys
+cp .env.example config/.env
+# Edit config/.env with your keys:
+#   LASTFM_API_KEY=xxx          (from https://www.last.fm/api)
+#   OPENWEATHER_API_KEY=xxx     (from https://openweathermap.org/api)
+
+# 3. Install
+pip install -r requirements.txt
+
+# 4. Start Elasticsearch + Kibana
+docker-compose -f docker/docker-compose.yml up -d
+
+# 5. Run pipeline
+python run_pipeline.py              # Pandas version
+python run_pipeline.py --spark     # Spark version (+1.5 bonus points)
+python run_pipeline.py --s3        # With S3 distributed storage (+1 bonus)
+
+# 6. Open Kibana
+# http://localhost:5601
+# Stack Management → Saved Objects → Import kibana/dashboard_export.ndjson
+```
+
+---
+
+## Scoring Rubric Coverage
+
+### Mandatory (Green Cells)
+
+| Requirement | Points | Implementation | File |
+|-------------|--------|---------------|------|
+| Ingestion of 2+ data sources as files | 2 | Last.fm API + OpenWeatherMap API | `jobs/ingestion/ingest_lastfm.py`, `ingest_weather.py` |
+| Transform to Parquet | 2 | Pandas + PySpark versions | `jobs/formatting/format_*.py` |
+| Fields normalization (UTC dates) | 1 | ISO 8601 dates, Parquet schemas | `jobs/formatting/` |
+| Join sources → value-added output | 2 | Join + City Depression Index (CDI) | `jobs/combination/combine_mood_weather.py` |
+| Index to Elasticsearch | 2 | Bulk indexing with geo_point mapping | `jobs/indexing/index_to_es.py` |
+| Kibana Dashboard | 2 | Map + Bar + Line + Metrics | `kibana/dashboard_export.ndjson` |
+| Clean naming conventions | 1 | `data/<layer>/<source>/<date>/` | `data/` |
+| Airflow DAG / run all at once | 1 | DAG + `run_pipeline.py` | `dags/`, `run_pipeline.py` |
+
+### Bonus Points
+
+| Bonus | Points | Implementation | File |
+|-------|--------|---------------|------|
+| Use Spark for transformations | 1.5 | PySpark formatting + combination | `jobs/*/*_spark.py` |
+| Interesting/innovative result | 1.5-3 | CDI (self-invented metric) | `jobs/combination/` |
+| S3 distributed file system | 1 | LocalStack + boto3 | `jobs/s3_storage.py` |
+| Blog post | 1 | Medium-style article | `blog_post.md` |
+| Video presentation | 0.5-1.5 | 10-min demo video | (separate file) |
 
 ---
 
 ## Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                      AIRFLOW DAG                             │
-│              (city_mood_weather_pipeline)                     │
-├──────────────────────────────────────────────────────────────┤
-│                                                              │
-│  ┌─────────────────┐     ┌─────────────────┐                │
-│  │ ingest_spotify  │     │ ingest_weather  │   ← REST APIs  │
-│  │  (Spotify API)  │     │  (OpenWeather)  │                │
-│  └───────┬─────────┘     └───────┬─────────┘                │
-│          │                       │                           │
-│          ▼                       ▼                           │
-│  ┌─────────────────┐     ┌─────────────────┐                │
-│  │ format_spotify  │     │ format_weather  │   ← Spark      │
-│  │ JSON → Parquet  │     │ JSON → Parquet  │                │
-│  └───────┬─────────┘     └───────┬─────────┘                │
-│          │                       │                           │
-│          └───────────┬───────────┘                           │
-│                      ▼                                       │
-│           ┌──────────────────┐                               │
-│           │  combine_mood   │   ← Spark (join + CDI)        │
-│           │ Join + CDI calc │                               │
-│           └────────┬─────────┘                               │
-│                    ▼                                         │
-│           ┌──────────────────┐                               │
-│           │   index_to_es   │   ← Elasticsearch             │
-│           │ Parquet → ES    │                               │
-│           └────────┬─────────┘                               │
-│                    ▼                                         │
-│           ┌──────────────────┐                               │
-│           │     KIBANA       │   ← Dashboard                │
-│           │  City Mood Map   │                               │
-│           └──────────────────┘                               │
-└──────────────────────────────────────────────────────────────┘
+┌──────────────┐     ┌──────────────┐
+│  Last.fm API │     │ OpenWeather  │   ← REST APIs
+│  Top Tracks  │     │    API       │
+└──────┬───────┘     └──────┬───────┘
+       │                    │
+       ▼                    ▼
+┌──────────────────────────────────────┐
+│            DATA LAKE                  │
+│  raw/  →  formatted/  →  combined/   │
+│  JSON     Parquet         Parquet    │
+│         (Pandas/Spark)   (CDI calc)  │
+└──────────────────┬───────────────────┘
+                   │
+                   ▼
+┌──────────────────────────────────────┐
+│         Elasticsearch                │
+│    (geo_point + full-text index)     │
+└──────────────────┬───────────────────┘
+                   │
+                   ▼
+┌──────────────────────────────────────┐
+│            KIBANA                    │
+│   Map · Bars · Lines · Metrics       │
+└──────────────────────────────────────┘
 ```
 
 ### Data Lake Structure
 
 ```
 data/
-├── raw/                      # Layer 0: Raw ingestion
-│   ├── spotify/
-│   │   └── <YYYY-MM-DD>/
-│   │       ├── global.json   # Global Top 50
-│   │       ├── fr.json       # France Top 50
-│   │       ├── us.json       # US Top 50
-│   │       └── ...
-│   └── weather/
-│       └── <YYYY-MM-DD>/
-│           └── cities_weather.json
-│
-├── formatted/                # Layer 1: Cleaned + Normalized (Parquet)
-│   ├── spotify/
-│   │   └── <YYYY-MM-DD>/
-│   └── weather/
-│       └── <YYYY-MM-DD>/
-│
-└── combined/                 # Layer 2: Joined + Enriched (Parquet)
+├── raw/                        # Layer 0: Raw ingestion (JSON)
+│   ├── lastfm/<YYYY-MM-DD>/    # Real top tracks per country
+│   └── weather/<YYYY-MM-DD>/   # Real weather per city
+├── formatted/                  # Layer 1: Normalized (Parquet)
+│   ├── lastfm/<YYYY-MM-DD>/
+│   └── weather/<YYYY-MM-DD>/
+└── combined/                   # Layer 2: Joined + CDI (Parquet)
     └── <YYYY-MM-DD>/
 ```
 
@@ -74,204 +111,57 @@ data/
 
 ## City Depression Index (CDI)
 
-The CDI combines Spotify''s **valence** (musical positivity, 0 = sad, 1 = happy)
-with weather conditions:
-
 ```
-CDI = (1 - avg_valence) × (1 + rain_bonus + cloud_bonus + humidity_bonus)
+CDI = (1 - avg_valence) x (1 + rain_bonus + cloud_bonus + humidity_bonus)
 
-  rain_bonus    = 0.3 if rainy, else 0
-  cloud_bonus   = (clouds_avg / 100) × 0.2
-  humidity_bonus = (humidity_avg / 100) × 0.1
+rain_bonus     = 0.3 if rainy, else 0
+cloud_bonus    = (clouds_avg / 100) x 0.2
+humidity_bonus = (humidity_avg / 100) x 0.1
 ```
 
-| CDI Range | Mood Category        |
-|-----------|----------------------|
-| < 0.3     | Happy & Sunny        |
-| 0.3–0.6   | Slightly Melancholic |
-| 0.6–0.9   | Moderately Sad       |
-| 0.9–1.2   | Quite Depressed      |
-| > 1.2     | Deeply Depressed     |
-
----
-
-## Tracked Cities
-
-| City       | Country | Region |
-|------------|---------|--------|
-| Paris      | FR 🇫🇷   | fr     |
-| London     | GB 🇬🇧   | gb     |
-| New York   | US 🇺🇸   | us     |
-| Tokyo      | JP 🇯🇵   | jp     |
-| Berlin     | DE 🇩🇪   | de     |
-| Sydney     | AU 🇦🇺   | au     |
-| Mumbai     | IN 🇮🇳   | in     |
-| São Paulo  | BR 🇧🇷   | br     |
-| Moscow     | RU 🇷🇺   | ru     |
-| Seoul      | KR 🇰🇷   | kr     |
-
----
-
-## Prerequisites
-
-- **Python 3.9+**
-- **Apache Spark 3.4+** (with `pyspark`)
-- **Docker** + Docker Compose (for Elasticsearch + Kibana)
-- **Apache Airflow 2.7+** (optional; can run scripts manually)
-
-### API Keys Required
-
-1. **Spotify Web API** — [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
-   - Create an app → get Client ID + Client Secret
-2. **OpenWeatherMap API** — [openweathermap.org/api](https://openweathermap.org/api)
-   - Free tier: 5-day/3-hour forecast API
-   - Paid tier: One Call API 3.0 for historical data
-
----
-
-## Quick Start
-
-### 1. Clone and configure
-
-```bash
-cd "City Mood x Weather"
-cp .env.example .env
-# Edit .env — add your Spotify and OpenWeather API keys
-```
-
-### 2. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Start Elasticsearch + Kibana
-
-```bash
-cd docker
-docker-compose up -d
-
-# Verify:
-curl http://localhost:9200     # Elasticsearch
-# Open http://localhost:5601   # Kibana
-```
-
-### 4. Run the pipeline
-
-**Option A: Run each step manually**
-
-```bash
-# Step 1: Ingest data
-python -m jobs.ingestion.ingest_spotify
-python -m jobs.ingestion.ingest_weather
-
-# Step 2: Format (raw → Parquet)
-spark-submit jobs/formatting/format_spotify.py
-spark-submit jobs/formatting/format_weather.py
-
-# Step 3: Combine + compute CDI
-spark-submit jobs/combination/combine_mood_weather.py
-
-# Step 4: Index to Elasticsearch
-spark-submit jobs/indexing/index_to_es.py
-```
-
-**Option B: Run via Airflow**
-
-```bash
-# Copy the DAG to your Airflow DAGs folder
-cp dags/city_mood_weather_dag.py $AIRFLOW_HOME/dags/
-
-# Set Airflow Variables for API keys:
-airflow variables set SPOTIFY_CLIENT_ID "your_id"
-airflow variables set SPOTIFY_CLIENT_SECRET "your_secret"
-airflow variables set OPENWEATHER_API_KEY "your_key"
-
-# Trigger the DAG
-airflow dags trigger city_mood_weather_pipeline
-```
-
-### 5. View the Kibana Dashboard
-
-1. Open **http://localhost:5601**
-2. Go to **Stack Management → Index Patterns** → create pattern `city_depression_index`
-3. Go to **Analytics → Dashboard** → create a new dashboard
-4. Add visualizations:
-   - **Maps**: Geo-point of cities colored by `depression_index`
-   - **Bar chart**: CDI by city
-   - **Line chart**: CDI over time (if running daily)
-   - **Metric**: Highest/Lowest CDI city today
-   - **Data table**: Full city × date records
-
----
-
-## Scoring Rubric Coverage
-
-| Requirement                          | Points | Implementation                          |
-|--------------------------------------|--------|-----------------------------------------|
-| Ingestion of N data sources as files | 2      | Spotify + Weather → raw JSON            |
-| Fields normalization (UTC, etc.)     | 1      | Dates in ISO 8601 UTC, Parquet schema   |
-| Transform → Parquet (Spark)          | 2      | `format_spotify.py` + `format_weather.py`|
-| Join sources → value-added output    | 2      | `combine_mood_weather.py` + CDI formula |
-| Index to Elasticsearch               | 2      | `index_to_es.py` with geo_point mapping |
-| Kibana Dashboard                     | 2      | Maps, charts, metrics on CDI data       |
-| Clean naming conventions             | 1      | `data/<layer>/<source>/<date>/` pattern |
-| **Total (base)**                     | **12** |                                         |
-
-**Bonus opportunities:**
-- Use DBT instead of Spark (+1.5)
-- Machine learning for CDI (+1)
-- Distributed FS / S3 (+1)
-- Kafka realtime (+1)
-- Airbyte ingestion (+1)
-- Deploy to cloud (+1)
-- Blog post (+1)
+| CDI Range | Mood |
+|-----------|------|
+| < 0.3 | Happy & Sunny |
+| 0.3-0.6 | Slightly Melancholic |
+| 0.6-0.9 | Moderately Sad |
+| 0.9-1.2 | Quite Depressed |
+| > 1.2 | Deeply Depressed |
 
 ---
 
 ## Project Structure
 
 ```
-City Mood x Weather/
-├── .env.example                  # API key template
-├── requirements.txt              # Python dependencies
-├── README.md                     # This file
-│
-├── config/
-│   └── .env                      # Your actual API keys (gitignored)
-│
-├── docker/
-│   └── docker-compose.yml        # Elasticsearch + Kibana
-│
-├── dags/
-│   └── city_mood_weather_dag.py  # Airflow DAG
-│
+├── run_pipeline.py              # One-click full pipeline
+├── blog_post.md                 # Blog article
+├── dags/                        # Airflow DAG
 ├── jobs/
-│   ├── __init__.py
-│   ├── common.py                 # Shared utils, city config, env loader
+│   ├── common.py                # Shared utils, city mapping
+│   ├── s3_storage.py            # S3 distributed storage
 │   ├── ingestion/
-│   │   ├── __init__.py
-│   │   ├── ingest_spotify.py     # Spotify Top 50 + audio features
-│   │   └── ingest_weather.py     # OpenWeatherMap API
+│   │   ├── ingest_lastfm.py     # Last.fm API integration
+│   │   ├── ingest_weather.py    # OpenWeatherMap API
+│   │   └── generate_mock_data.py
 │   ├── formatting/
-│   │   ├── __init__.py
-│   │   ├── format_spotify.py     # Raw JSON → Parquet (Spark)
-│   │   └── format_weather.py     # Raw JSON → Parquet (Spark)
+│   │   ├── format_lastfm.py     # Pandas formatting
+│   │   ├── format_lastfm_spark.py  # Spark formatting (+bonus)
+│   │   ├── format_weather.py
+│   │   └── format_weather_spark.py
 │   ├── combination/
-│   │   ├── __init__.py
-│   │   └── combine_mood_weather.py  # Join + CDI (Spark)
+│   │   ├── combine_mood_weather.py      # Pandas CDI calculation
+│   │   └── combine_mood_weather_spark.py # Spark CDI (+bonus)
 │   └── indexing/
-│       ├── __init__.py
-│       └── index_to_es.py        # Parquet → Elasticsearch
-│
-└── data/                         # Data Lake (gitignored)
-    ├── raw/
-    ├── formatted/
-    └── combined/
+│       └── index_to_es.py       # Elasticsearch bulk index
+├── docker/
+│   └── docker-compose.yml       # ES + Kibana
+├── kibana/
+│   └── dashboard_export.ndjson  # Pre-built dashboard
+├── dashboard/                   # Standalone HTML dashboard (bonus)
+└── data/                        # Data Lake
 ```
 
 ---
 
 ## License
 
-Educational project — Big Data course.
+Educational project - Big Data course.
