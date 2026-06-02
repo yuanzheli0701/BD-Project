@@ -1,0 +1,43 @@
+﻿# Environment
+.env
+config/.env
+
+# Data Lake contents
+data/raw/*
+data/formatted/*
+data/combined/*
+!data/raw/.gitkeep
+!data/formatted/.gitkeep
+!data/combined/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Spark
+metastore_db/
+derby.log
+spark-warehouse/
+
+# Airflow
+airflow/logs/
+airflow/plugins/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+elasticsearch/data/
