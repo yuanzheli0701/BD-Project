@@ -1,0 +1,104 @@
+﻿1
+00:00:00,000 --> 00:00:08,000
+[EN] Hello, I present my Big Data project: City Mood x Weather Correlation Analysis.
+[ZH] 大家好，我展示我的大数据项目：城市情绪与天气相关性分析。
+
+2
+00:00:08,000 --> 00:00:16,000
+[EN] The question: do people listen to sadder music when it rains?
+[ZH] 研究的问题是：下雨天人们会不会听更悲伤的音乐？
+
+3
+00:00:16,000 --> 00:00:28,000
+[EN] I built a complete Data Lake pipeline with two REST APIs: Last.fm and OpenWeatherMap.
+[ZH] 我搭建了完整的 Data Lake 管道，使用两个 REST API：Last.fm 和 OpenWeatherMap。
+
+4
+00:00:28,000 --> 00:00:42,000
+[EN] Data flows through four layers: raw JSON, formatted Parquet, combined CDI, indexed to Elasticsearch, visualized in Kibana.
+[ZH] 数据流经四层：原始 JSON、格式化 Parquet、合并 CDI、索引 Elasticsearch、Kibana 可视化。
+
+5
+00:00:42,000 --> 00:00:58,000
+[EN] One command to run the full pipeline: python run_pipeline.py. Fetches data for 10 cities in about 30 seconds.
+[ZH] 一条命令运行完整管道：python run_pipeline.py。约 30 秒拉取 10 个城市的数据。
+
+6
+00:00:58,000 --> 00:01:10,000
+[EN] The core of my project is the City Depression Index, or CDI, which I invented myself.
+[ZH] 项目的核心是我自创的 City Depression Index，简称 CDI。
+
+7
+00:01:10,000 --> 00:01:24,000
+[EN] CDI = (1 - valence) x (1 + rain_bonus + cloud_bonus + humidity_bonus). Valence: 0 = sad, 1 = happy.
+[ZH] CDI = (1 - valence) x (1 + 雨天加成 + 云量加成 + 湿度加成)。Valence：0=悲伤，1=快乐。
+
+8
+00:01:24,000 --> 00:01:38,000
+[EN] Rain adds 0.3, clouds add up to 0.2, humidity adds up to 0.1 to the weather factor.
+[ZH] 下雨+0.3，云量最多+0.2，湿度最多+0.1 到天气系数中。
+
+9
+00:01:38,000 --> 00:01:52,000
+[EN] Now let me show the Kibana dashboard with real-time data from June 2nd, 2026.
+[ZH] 现在展示 Kibana 仪表盘，使用 2026 年 6 月 2 日的实时数据。
+
+10
+00:01:52,000 --> 00:02:08,000
+[EN] World map: each circle is a city. Bigger and redder means higher CDI. Tokyo and Paris are red - it is raining there.
+[ZH] 世界地图：每个圆圈代表城市。越大越红=CDI 越高。Tokyo 和 Paris 是红色——那里在下雨。
+
+11
+00:02:08,000 --> 00:02:22,000
+[EN] Bar chart ranks cities by CDI. Line chart shows 31-day trends with per-city breakdown.
+[ZH] 柱状图按 CDI 排名城市。折线图展示 31 天趋势，按城市分解。
+
+12
+00:02:22,000 --> 00:02:38,000
+[EN] Metric cards display highest and lowest CDI values at a glance.
+[ZH] 指标卡一目了然地显示最高和最低 CDI 值。
+
+13
+00:02:38,000 --> 00:02:52,000
+[EN] Data Lake structure follows the standard: data/layer/source/YYYY-MM-DD/ naming convention.
+[ZH] Data Lake 结构遵循标准：data/layer/source/YYYY-MM-DD/ 命名规范。
+
+14
+00:02:52,000 --> 00:03:06,000
+[EN] Raw stores API JSON. Formatted normalizes dates to UTC and converts to Parquet. Combined joins and computes CDI.
+[ZH] Raw 存储 API JSON。Formatted 标准化日期到 UTC 并转 Parquet。Combined 合并并计算 CDI。
+
+15
+00:03:06,000 --> 00:03:22,000
+[EN] I have five bonus features. First, Spark versions using PySpark DataFrames for formatting and combination.
+[ZH] 我有五项加分功能。第一，使用 PySpark DataFrame 的 Spark 版本格式化和合并。
+
+16
+00:03:22,000 --> 00:03:38,000
+[EN] Second, S3 distributed storage with LocalStack and boto3. Third, Airflow DAG for orchestration.
+[ZH] 第二，使用 LocalStack 和 boto3 的 S3 分布式存储。第三，Airflow DAG 编排。
+
+17
+00:03:38,000 --> 00:03:52,000
+[EN] Fourth, a blog post explaining the project. Fifth, the innovative self-invented CDI metric.
+[ZH] 第四，项目博客文章。第五，创新的自创 CDI 指标。
+
+18
+00:03:52,000 --> 00:04:08,000
+[EN] Results: 31 days, 10 cities, 320 records. Rainy cities show 2x higher CDI than sunny ones.
+[ZH] 结果：31 天、10 个城市、320 条记录。雨天城市的 CDI 是晴天的 2 倍。
+
+19
+00:04:08,000 --> 00:04:22,000
+[EN] Conclusion: weather does correlate with musical mood. The hypothesis is confirmed by data.
+[ZH] 结论：天气确实与音乐情绪相关。数据验证了假设。
+
+20
+00:04:22,000 --> 00:04:36,000
+[EN] This project demonstrates a complete Big Data architecture from API to Dashboard. Thank you for watching.
+[ZH] 本项目展示了从 API 到 Dashboard 的完整大数据架构。谢谢观看。
+
+21
+00:04:36,000 --> 00:04:50,000
+[EN] I am happy to answer any questions about the architecture, code, or methodology.
+[ZH] 我很乐意回答关于架构、代码或方法的任何问题。
