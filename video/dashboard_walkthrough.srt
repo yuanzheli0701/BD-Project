@@ -1,0 +1,119 @@
+1
+00:00:00,000 --> 00:00:04,500
+First, we can see that Docker is already running and in action.
+
+2
+00:00:04,500 --> 00:00:07,500
+Okay, so let's check it here.
+
+3
+00:00:07,500 --> 00:00:10,000
+And here, we need to change the time range.
+
+4
+00:00:10,000 --> 00:00:13,500
+Let's change it to May 1st, 2026, and click Update.
+
+5
+00:00:13,500 --> 00:00:16,000
+Right now, it's updating. Okay.
+
+6
+00:00:16,000 --> 00:00:20,000
+So here is the CDI World Map.
+
+7
+00:00:20,000 --> 00:00:26,000
+We selected 10 cities from all over the world to display our results.
+
+8
+00:00:26,000 --> 00:00:30,500
+Yes, and here...
+
+9
+00:00:30,500 --> 00:00:35,500
+It shows the CDI by City, and we also display these 10 cities here.
+
+10
+00:00:35,500 --> 00:00:41,500
+So you can see Sydney, San Paulo, Paris, Moscow, Berlin, New York...
+
+11
+00:00:41,500 --> 00:00:49,000
+...London, Tokyo, Mumbai, and Seoul.
+
+12
+00:00:49,000 --> 00:00:52,500
+Okay, and here...
+
+13
+00:00:52,500 --> 00:00:56,500
+We can track the CDI Over Time.
+
+14
+00:00:56,500 --> 00:01:08,000
+You can see the changes across these different cities.
+
+15
+00:01:08,000 --> 00:01:13,000
+Okay, and over here are the Highest CDI and Lowest CDI metrics.
+
+16
+00:01:13,000 --> 00:01:16,500
+If you click specifically on Sydney...
+
+17
+00:01:16,500 --> 00:01:21,500
+You can filter and see all the filtered data here.
+
+18
+00:01:21,500 --> 00:01:25,500
+Okay, so that's for that section.
+
+19
+00:01:25,500 --> 00:01:29,000
+Moving down, here is the Rainfall vs. CDI Trend.
+
+20
+00:01:29,000 --> 00:01:34,500
+You can find some correlations from this visualization over these dates.
+
+21
+00:01:34,500 --> 00:01:42,000
+So we can understand what is happening here.
+
+22
+00:01:42,000 --> 00:01:45,500
+Next to it is the Mood Distribution chart.
+
+23
+00:01:45,500 --> 00:01:51,000
+We can see the proportions for different mood categories.
+
+24
+00:01:51,000 --> 00:01:54,500
+And here is the City CDI Summary table.
+
+25
+00:01:54,500 --> 00:02:06,000
+You can see detailed statistics for the 10 cities, down to Mumbai.
+
+26
+00:02:06,000 --> 00:02:10,000
+Okay, and right here is the CDI Heatmap Calendar.
+
+27
+00:02:10,000 --> 00:02:15,000
+It lists the 10 cities with a clear color legend.
+
+28
+00:02:15,000 --> 00:02:18,000
+As the values change, you can track them here.
+
+29
+00:02:18,000 --> 00:02:24,000
+For instance, we find that Sydney might have better indexes here...
+
+30
+00:02:24,000 --> 00:02:27,500
+...while Paris shows a less ideal trend.
