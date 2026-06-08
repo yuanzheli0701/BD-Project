@@ -1,0 +1,21 @@
+﻿Let me briefly walk you through the project structure.
+
+The main entry point is run_pipeline.py, which runs the full workflow from ingestion, to formatting, combination, and indexing.
+
+The jobs folder contains most of the project logic, starting with the ingestion folder that collects raw data from the music and weather APIs.
+
+The formatting folder cleans the raw JSON and converts it into Parquet, while the combination folder joins music and weather data by region and date.
+
+It then calculates the City Depression Index, and the indexing folder sends the combined result to Elasticsearch.
+
+The data folder works like a small data lake with three layers: raw, formatted, and combined.
+
+The raw layer keeps the original API responses, the formatted layer stores cleaned Parquet files, and the combined layer stores the final joined data.
+
+The dags folder contains the Airflow DAG, which shows how the pipeline can be scheduled automatically.
+
+The docker folder has the Docker Compose file for Elasticsearch and Kibana, and the kibana folder stores the exported dashboard configuration.
+
+The dashboard folder contains a standalone HTML version of the visualization that works without opening Kibana.
+
+Overall, the project follows a standard data pipeline: collect, clean, join, calculate CDI, and visualize the result.
