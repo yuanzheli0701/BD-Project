@@ -14,7 +14,7 @@ may_dates = [f"2026-05-{d:02d}" for d in range(1, 32)]
 print(f"Generating data for {len(may_dates)} days of May...")
 print("=" * 60)
 
-# --- Step 1: Weather (run once, copy to all dates) ---
+
 print("\n[1/4] Fetching weather data...")
 os.chdir(str(BASE))
 os.system("python -m jobs.ingestion.ingest_weather")
@@ -23,7 +23,7 @@ os.system("python -m jobs.ingestion.ingest_weather")
 # Actually the ingestion creates data with today's date. Let me just run it for each date.
 # Better approach: use the mock weather generator with seasonal scenario
 
-# --- Step 1: Generate all data using the mock generator (faster for batch) ---
+
 from jobs.ingestion.generate_mock_data import generate_mock_data, gen_tracks, gen_weather, CITY_MAP
 
 # Generate combined mock data with real weather API for current conditions
@@ -40,7 +40,7 @@ for i, date_str in enumerate(may_dates):
     except Exception as e:
         print(f"    ERROR: {e}")
 
-# --- Step 2: Format all dates ---
+
 print("\n[2/4] Formatting all dates...")
 for date_str in may_dates:
     spotify_dir = get_raw_path("spotify", date_str)
@@ -64,7 +64,7 @@ for date_str in may_dates:
     except Exception as e:
         print(f"    ERROR: {e}")
 
-# --- Step 3: Combine all dates ---
+
 print("\n[3/4] Combining all dates...")
 for date_str in may_dates:
     sp_path = get_formatted_path("spotify", date_str) / "spotify.parquet"
@@ -84,7 +84,7 @@ for date_str in may_dates:
     except Exception as e:
         print(f"    ERROR: {e}")
 
-# --- Step 4: Index all to ES ---
+
 print("\n[4/4] Indexing to Elasticsearch...")
 import pandas as pd, requests
 

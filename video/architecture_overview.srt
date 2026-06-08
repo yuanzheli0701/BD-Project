@@ -1,0 +1,43 @@
+1
+00:00:00,000 --> 00:00:04,500
+Now, let's take a closer look at the architecture of our project.
+
+2
+00:00:04,500 --> 00:00:09,000
+The entire system is designed around an end-to-end data pipeline.
+
+3
+00:00:09,000 --> 00:00:13,500
+We extract raw data from two primary sources: Last.fm and OpenWeatherMap.
+
+4
+00:00:13,500 --> 00:00:18,000
+This data is ingested directly into a multi-layered data lake structure...
+
+5
+00:00:18,000 --> 00:00:22,500
+...moving seamlessly from raw JSON formats to structured Parquet files.
+
+6
+00:00:22,500 --> 00:00:26,000
+Here, you can see how the file layers are organized.
+
+7
+00:00:26,000 --> 00:00:30,500
+We strictly separate them into raw, formatted, and combined stages...
+
+8
+00:00:30,500 --> 00:00:34,000
+...to ensure data consistency and high processing efficiency.
+
+9
+00:00:34,000 --> 00:00:37,500
+Next is our core logic: the CDI calculation formula.
+
+10
+00:00:37,500 --> 00:00:41,500
+CDI stands for City Depression Index, which measures a city's mood.
+
+11
+00:00:41,500 --> 00:00:47,000
+It uses the music's average valence as a baseline with environmental factors.

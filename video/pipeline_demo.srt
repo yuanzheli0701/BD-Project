@@ -1,0 +1,35 @@
+1
+00:00:00,000 --> 00:00:03,000
+Now, let's head over to the terminal to run the data pipeline.
+
+2
+00:00:03,000 --> 00:00:06,500
+We execute the main pipeline script to start the workflow.
+
+3
+00:00:06,500 --> 00:00:10,000
+Stage 1 begins: Ingesting weather data for the 10 global cities.
+
+4
+00:00:10,000 --> 00:00:14,500
+The script successfully fetches and saves real-time weather forecasts as raw JSON.
+
+5
+00:00:14,500 --> 00:00:18,000
+Next, Stage 2 kicks off to fetch music data from Last.fm.
+
+6
+00:00:18,000 --> 00:00:22,500
+It retrieves top tracks for each location and logs specific emotional attributes.
+
+7
+00:00:22,500 --> 00:00:26,500
+In Stage 3, the pipeline combines weather features and music metadata to calculate CDI.
+
+8
+00:00:26,500 --> 00:00:31,000
+Finally, Stage 4 indexes and ingests this processed multi-source data into Elasticsearch.
+
+9
+00:00:31,000 --> 00:00:35,000
+The data has been successfully formatted and exported, completing the pipeline!

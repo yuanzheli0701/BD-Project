@@ -1,8 +1,8 @@
-﻿# City Mood x Weather - Correlation Analysis
+# City Mood x Weather - Correlation Analysis
 
-> **Do people listen to sadder music when it rains?**
 > 
-> Real-time music charts (Last.fm) x weather data (OpenWeatherMap) → City Depression Index → Kibana Dashboard
+> 
+> Real-time music charts (Last.fm) x weather data (OpenWeatherMap)  City Depression Index  Kibana Dashboard
 
 ---
 
@@ -32,7 +32,7 @@ python run_pipeline.py --s3        # With S3 distributed storage (+1 bonus)
 
 # 6. Open Kibana
 # http://localhost:5601
-# Stack Management → Saved Objects → Import kibana/dashboard_export.ndjson
+# Stack Management  Saved Objects  Import kibana/dashboard_export.ndjson
 ```
 
 ---
@@ -46,7 +46,7 @@ python run_pipeline.py --s3        # With S3 distributed storage (+1 bonus)
 | Ingestion of 2+ data sources as files | 2 | Last.fm API + OpenWeatherMap API | `jobs/ingestion/ingest_lastfm.py`, `ingest_weather.py` |
 | Transform to Parquet | 2 | Pandas + PySpark versions | `jobs/formatting/format_*.py` |
 | Fields normalization (UTC dates) | 1 | ISO 8601 dates, Parquet schemas | `jobs/formatting/` |
-| Join sources → value-added output | 2 | Join + City Depression Index (CDI) | `jobs/combination/combine_mood_weather.py` |
+| Join sources  value-added output | 2 | Join + City Depression Index (CDI) | `jobs/combination/combine_mood_weather.py` |
 | Index to Elasticsearch | 2 | Bulk indexing with geo_point mapping | `jobs/indexing/index_to_es.py` |
 | Kibana Dashboard | 2 | Map + Bar + Line + Metrics | `kibana/dashboard_export.ndjson` |
 | Clean naming conventions | 1 | `data/<layer>/<source>/<date>/` | `data/` |
@@ -67,44 +67,44 @@ python run_pipeline.py --s3        # With S3 distributed storage (+1 bonus)
 ## Architecture
 
 ```
-┌──────────────┐     ┌──────────────┐
-│  Last.fm API │     │ OpenWeather  │   ← REST APIs
-│  Top Tracks  │     │    API       │
-└──────┬───────┘     └──────┬───────┘
-       │                    │
-       ▼                    ▼
-┌──────────────────────────────────────┐
-│            DATA LAKE                  │
-│  raw/  →  formatted/  →  combined/   │
-│  JSON     Parquet         Parquet    │
-│         (Pandas/Spark)   (CDI calc)  │
-└──────────────────┬───────────────────┘
-                   │
-                   ▼
-┌──────────────────────────────────────┐
-│         Elasticsearch                │
-│    (geo_point + full-text index)     │
-└──────────────────┬───────────────────┘
-                   │
-                   ▼
-┌──────────────────────────────────────┐
-│            KIBANA                    │
-│   Map · Bars · Lines · Metrics       │
-└──────────────────────────────────────┘
+     
+  Last.fm API       OpenWeather      REST APIs
+  Top Tracks           API       
+     
+                           
+                           
+
+            DATA LAKE                  
+  raw/    formatted/    combined/   
+  JSON     Parquet         Parquet    
+         (Pandas/Spark)   (CDI calc)  
+
+                   
+                   
+
+         Elasticsearch                
+    (geo_point + full-text index)     
+
+                   
+                   
+
+            KIBANA                    
+   Map  Bars  Lines  Metrics       
+
 ```
 
 ### Data Lake Structure
 
 ```
 data/
-├── raw/                        # Layer 0: Raw ingestion (JSON)
-│   ├── lastfm/<YYYY-MM-DD>/    # Real top tracks per country
-│   └── weather/<YYYY-MM-DD>/   # Real weather per city
-├── formatted/                  # Layer 1: Normalized (Parquet)
-│   ├── lastfm/<YYYY-MM-DD>/
-│   └── weather/<YYYY-MM-DD>/
-└── combined/                   # Layer 2: Joined + CDI (Parquet)
-    └── <YYYY-MM-DD>/
+ raw/                        # Layer 0: Raw ingestion (JSON)
+    lastfm/<YYYY-MM-DD>/    # Real top tracks per country
+    weather/<YYYY-MM-DD>/   # Real weather per city
+ formatted/                  # Layer 1: Normalized (Parquet)
+    lastfm/<YYYY-MM-DD>/
+    weather/<YYYY-MM-DD>/
+ combined/                   # Layer 2: Joined + CDI (Parquet)
+     <YYYY-MM-DD>/
 ```
 
 ---
@@ -132,32 +132,32 @@ humidity_bonus = (humidity_avg / 100) x 0.1
 ## Project Structure
 
 ```
-├── run_pipeline.py              # One-click full pipeline
-├── blog_post.md                 # Blog article
-├── dags/                        # Airflow DAG
-├── jobs/
-│   ├── common.py                # Shared utils, city mapping
-│   ├── s3_storage.py            # S3 distributed storage
-│   ├── ingestion/
-│   │   ├── ingest_lastfm.py     # Last.fm API integration
-│   │   ├── ingest_weather.py    # OpenWeatherMap API
-│   │   └── generate_mock_data.py
-│   ├── formatting/
-│   │   ├── format_lastfm.py     # Pandas formatting
-│   │   ├── format_lastfm_spark.py  # Spark formatting (+bonus)
-│   │   ├── format_weather.py
-│   │   └── format_weather_spark.py
-│   ├── combination/
-│   │   ├── combine_mood_weather.py      # Pandas CDI calculation
-│   │   └── combine_mood_weather_spark.py # Spark CDI (+bonus)
-│   └── indexing/
-│       └── index_to_es.py       # Elasticsearch bulk index
-├── docker/
-│   └── docker-compose.yml       # ES + Kibana
-├── kibana/
-│   └── dashboard_export.ndjson  # Pre-built dashboard
-├── dashboard/                   # Standalone HTML dashboard (bonus)
-└── data/                        # Data Lake
+ run_pipeline.py              # One-click full pipeline
+ blog_post.md                 # Blog article
+ dags/                        # Airflow DAG
+ jobs/
+    common.py                # Shared utils, city mapping
+    s3_storage.py            # S3 distributed storage
+    ingestion/
+       ingest_lastfm.py     # Last.fm API integration
+       ingest_weather.py    # OpenWeatherMap API
+       generate_mock_data.py
+    formatting/
+       format_lastfm.py     # Pandas formatting
+       format_lastfm_spark.py  # Spark formatting (+bonus)
+       format_weather.py
+       format_weather_spark.py
+    combination/
+       combine_mood_weather.py      # Pandas CDI calculation
+       combine_mood_weather_spark.py # Spark CDI (+bonus)
+    indexing/
+        index_to_es.py       # Elasticsearch bulk index
+ docker/
+    docker-compose.yml       # ES + Kibana
+ kibana/
+    dashboard_export.ndjson  # Pre-built dashboard
+ dashboard/                   # Standalone HTML dashboard (bonus)
+ data/                        # Data Lake
 ```
 
 ---

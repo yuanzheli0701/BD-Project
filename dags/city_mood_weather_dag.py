@@ -1,8 +1,4 @@
-"""
-Airflow DAG - City Mood x Weather Correlation Analysis
 
-Pipeline: Ingest -> Format -> Combine -> Index to ES -> Kibana
-"""
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.bash import BashOperator

@@ -1,4 +1,4 @@
-﻿# Big Data Project Report
+# Big Data Project Report
 ## City Mood x Weather - Correlation Analysis
 
 **Student:** [Your Name]
@@ -33,11 +33,11 @@ This project explores the correlation between weather conditions and music liste
 ## 3. Architecture
 
 ```
-Last.fm API ──┐                    ┌── Elasticsearch ── Kibana Dashboard
-              ├── Spark/Parquet ──┤    (Map + Bar + Line + Metrics)
-OpenWeather ──┘                    └── S3 Data Lake
-              │
-              └── Airflow DAG (orchestration)
+Last.fm API                      Elasticsearch  Kibana Dashboard
+               Spark/Parquet     (Map + Bar + Line + Metrics)
+OpenWeather                      S3 Data Lake
+              
+               Airflow DAG (orchestration)
 ```
 
 ### Data Lake Layers

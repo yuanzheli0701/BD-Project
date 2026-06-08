@@ -1,4 +1,4 @@
-﻿# City Mood x Weather: When Rain Makes Your Playlist Sad
+# City Mood x Weather: When Rain Makes Your Playlist Sad
 
 *A Big Data project correlating Spotify charts with weather to compute a City Depression Index*
 
@@ -13,16 +13,16 @@ Do people really listen to sadder music when it rains? We set out to answer this
 We built an end-to-end Data Lake pipeline:
 
 ```
-Last.fm API ──┐                    ┌── Elasticsearch ── Kibana
-              ├── Spark/Parquet ──┤
-OpenWeather ──┘                    └── S3 Data Lake
+Last.fm API                      Elasticsearch  Kibana
+               Spark/Parquet 
+OpenWeather                      S3 Data Lake
 ```
 
 **4 layers:**
-- **Raw** — JSON from REST APIs
-- **Formatted** — Normalized Parquet (Spark)
-- **Combined** — Joined + CDI calculation
-- **Exposition** — Kibana Dashboard
+- **Raw**  JSON from REST APIs
+- **Formatted**  Normalized Parquet (Spark)
+- **Combined**  Joined + CDI calculation
+- **Exposition**  Kibana Dashboard
 
 ## The Formula: City Depression Index
 

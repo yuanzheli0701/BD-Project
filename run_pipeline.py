@@ -1,6 +1,4 @@
-﻿"""Run the full City Mood x Weather DAG end-to-end (Airflow DAG simulator).
-Usage: python run_pipeline.py [--date 2026-06-02] [--source lastfm] [--s3]
-"""
+﻿
 import sys, os, argparse
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
