@@ -1,0 +1,139 @@
+1
+00:00:00,000 --> 00:00:08,000
+Let me briefly walk you through the project structure
+
+2
+00:00:08,000 --> 00:00:10,000
+The main entry point is run_pipeline py
+
+3
+00:00:10,000 --> 00:00:12,500
+which runs the full workflow
+
+4
+00:00:12,500 --> 00:00:14,000
+from ingestion
+
+5
+00:00:14,000 --> 00:00:15,500
+to formatting
+
+6
+00:00:15,500 --> 00:00:16,500
+combination
+
+7
+00:00:16,500 --> 00:00:18,000
+and indexing
+
+8
+00:00:18,000 --> 00:00:24,000
+The jobs folder contains most of the project logic
+
+9
+00:00:24,000 --> 00:00:27,000
+starting with the ingestion folder
+
+10
+00:00:27,000 --> 00:00:30,000
+that collects raw data from the music and weather APIs
+
+11
+00:00:30,000 --> 00:00:36,000
+The formatting folder cleans the raw JSON and converts it into Parquet
+
+12
+00:00:36,000 --> 00:00:42,000
+while the combination folder joins music and weather data by region and date
+
+13
+00:00:42,000 --> 00:00:47,000
+It then calculates the City Depression Index
+
+14
+00:00:47,000 --> 00:00:52,000
+and the indexing folder sends the combined result to Elasticsearch
+
+15
+00:00:52,000 --> 00:00:57,000
+The data folder works like a small data lake
+
+16
+00:00:57,000 --> 00:00:59,000
+with three layers
+
+17
+00:00:59,000 --> 00:01:00,500
+raw
+
+18
+00:01:00,500 --> 00:01:02,500
+formatted
+
+19
+00:01:02,500 --> 00:01:05,000
+and combined
+
+20
+00:01:05,000 --> 00:01:09,500
+The raw layer keeps the original API responses
+
+21
+00:01:09,500 --> 00:01:14,000
+the formatted layer stores cleaned Parquet files
+
+22
+00:01:14,000 --> 00:01:18,000
+and the combined layer stores the final joined data
+
+23
+00:01:18,000 --> 00:01:24,000
+The dags folder contains the Airflow DAG
+
+24
+00:01:24,000 --> 00:01:29,000
+which shows how the pipeline can be scheduled automatically
+
+25
+00:01:29,000 --> 00:01:35,000
+The docker folder has the Docker Compose file for Elasticsearch and Kibana
+
+26
+00:01:35,000 --> 00:01:41,000
+and the kibana folder stores the exported dashboard configuration
+
+27
+00:01:41,000 --> 00:01:47,000
+The dashboard folder contains a standalone HTML version
+
+28
+00:01:47,000 --> 00:01:52,000
+of the visualization that works without opening Kibana
+
+29
+00:01:52,000 --> 00:01:53,000
+Overall
+
+30
+00:01:53,000 --> 00:01:55,500
+the project follows a standard data pipeline
+
+31
+00:01:55,500 --> 00:01:56,500
+collect
+
+32
+00:01:56,500 --> 00:01:57,500
+clean
+
+33
+00:01:57,500 --> 00:01:58,500
+join
+
+34
+00:01:58,500 --> 00:01:59,500
+calculate CDI
+
+35
+00:01:59,500 --> 00:02:00,000
+and visualize the result
