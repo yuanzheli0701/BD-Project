@@ -1,139 +1,51 @@
 1
-00:00:00,000 --> 00:00:07,800
+00:00:00,000 --> 00:00:07,000
 Let me briefly walk you through the project structure
 
 2
-00:00:07,800 --> 00:00:09,750
-The main entry point is run_pipeline py
+00:00:07,000 --> 00:00:17,000
+The main entry point is run_pipeline.py, which runs the full workflow from ingestion to formatting, combination, and indexing
 
 3
-00:00:09,750 --> 00:00:12,187
-which runs the full workflow
+00:00:17,000 --> 00:00:27,000
+The jobs folder contains most of the project logic, starting with ingestion that collects raw data from the music and weather APIs
 
 4
-00:00:12,187 --> 00:00:13,650
-from ingestion
+00:00:27,000 --> 00:00:37,000
+The formatting folder cleans the raw JSON and converts it into Parquet, while the combination folder joins music and weather data by region and date
 
 5
-00:00:13,650 --> 00:00:15,112
-to formatting
+00:00:37,000 --> 00:00:45,000
+It then calculates the City Depression Index, and the indexing folder sends the combined result to Elasticsearch
 
 6
-00:00:15,112 --> 00:00:16,087
-combination
+00:00:45,000 --> 00:00:55,000
+The data folder works like a small data lake with three layers: raw, formatted, and combined
 
 7
-00:00:16,087 --> 00:00:17,550
-and indexing
+00:00:55,000 --> 00:01:05,000
+The raw layer keeps original API responses, the formatted layer stores cleaned Parquet files, and the combined layer stores the final joined data
 
 8
-00:00:17,550 --> 00:00:23,400
-The jobs folder contains most of the project logic
+00:01:05,000 --> 00:01:13,000
+The dags folder contains the Airflow DAG, which shows how the pipeline can be scheduled automatically
 
 9
-00:00:23,400 --> 00:00:26,325
-starting with the ingestion folder
+00:01:13,000 --> 00:01:23,000
+The docker folder has the Docker Compose file for Elasticsearch and Kibana, and the kibana folder stores the exported dashboard configuration
 
 10
-00:00:26,325 --> 00:00:29,250
-that collects raw data from the music and weather APIs
+00:01:23,000 --> 00:01:33,000
+The dashboard folder contains a standalone HTML version of the visualization that works without opening Kibana
 
 11
-00:00:29,250 --> 00:00:35,100
-The formatting folder cleans the raw JSON and converts it into Parquet
+00:01:33,000 --> 00:01:40,000
+Overall, the project follows a standard data pipeline
 
 12
-00:00:35,100 --> 00:00:40,950
-while the combination folder joins music and weather data by region and date
+00:01:40,000 --> 00:01:47,000
+collect, clean, join, calculate CDI, and visualize the result
 
 13
-00:00:40,950 --> 00:00:45,825
-It then calculates the City Depression Index
-
-14
-00:00:45,825 --> 00:00:50,700
-and the indexing folder sends the combined result to Elasticsearch
-
-15
-00:00:50,700 --> 00:00:55,575
-The data folder works like a small data lake
-
-16
-00:00:55,575 --> 00:00:57,525
-with three layers
-
-17
-00:00:57,525 --> 00:00:58,987
-raw
-
-18
-00:00:58,987 --> 00:01:00,937
-formatted
-
-19
-00:01:00,937 --> 00:01:03,375
-and combined
-
-20
-00:01:03,375 --> 00:01:07,762
-The raw layer keeps the original API responses
-
-21
-00:01:07,762 --> 00:01:12,150
-the formatted layer stores cleaned Parquet files
-
-22
-00:01:12,150 --> 00:01:16,050
-and the combined layer stores the final joined data
-
-23
-00:01:16,050 --> 00:01:21,900
-The dags folder contains the Airflow DAG
-
-24
-00:01:21,900 --> 00:01:26,775
-which shows how the pipeline can be scheduled automatically
-
-25
-00:01:26,775 --> 00:01:32,625
-The docker folder has the Docker Compose file for Elasticsearch and Kibana
-
-26
-00:01:32,625 --> 00:01:38,475
-and the kibana folder stores the exported dashboard configuration
-
-27
-00:01:38,475 --> 00:01:44,325
-The dashboard folder contains a standalone HTML version
-
-28
-00:01:44,325 --> 00:01:49,200
-of the visualization that works without opening Kibana
-
-29
-00:01:49,200 --> 00:01:50,175
-Overall
-
-30
-00:01:50,175 --> 00:01:52,612
-the project follows a standard data pipeline
-
-31
-00:01:52,612 --> 00:01:53,587
-collect
-
-32
-00:01:53,587 --> 00:01:54,562
-clean
-
-33
-00:01:54,562 --> 00:01:55,537
-join
-
-34
-00:01:55,537 --> 00:01:56,512
-calculate CDI
-
-35
-00:01:56,512 --> 00:01:57,000
-and visualize the result
+00:01:47,000 --> 00:01:57,000
+Thank you for watching
